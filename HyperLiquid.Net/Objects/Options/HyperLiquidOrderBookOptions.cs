@@ -1,5 +1,7 @@
 using CryptoExchange.Net.Objects.Options;
 using System;
+using CryptoExchange.Net.Objects.Sockets;
+using HyperLiquid.Net.Objects.Models;
 
 namespace HyperLiquid.Net.Objects.Options
 {
@@ -33,6 +35,10 @@ namespace HyperLiquid.Net.Objects.Options
         /// </summary>
         public int? Mantissa { get; set; }
 
+        /// <summary>
+        /// Optional additional handler for order book updates. This can be used to handle updates in a custom way, e.g. to log them or to perform additional processing.
+        /// </summary>
+        public Action<DataEvent<HyperLiquidOrderBook>>? AdditionalUpdateHandler { get; set; }
 
         internal HyperLiquidOrderBookOptions Copy()
         {

@@ -24,6 +24,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         private readonly TimeSpan _initialDataTimeout;
         private readonly int? _nSigFigs;
         private readonly int? _mantissa;
+        private readonly Action<DataEvent<HyperLiquidOrderBook>>? _additionalUpdateHandler;
 
         /// <summary>
         /// Create a new order book instance
@@ -60,6 +61,7 @@ namespace HyperLiquid.Net.SymbolOrderBooks
             Levels = options?.Limit;
             _nSigFigs = options?.NSigFigs;
             _mantissa = options?.Mantissa;
+            _additionalUpdateHandler = options?.AdditionalUpdateHandler;
             _initialDataTimeout = options?.InitialDataTimeout ?? TimeSpan.FromSeconds(30);
             _clientOwner = socketClient == null;
             _socketClient = socketClient ?? new HyperLiquidSocketClient();
@@ -89,6 +91,8 @@ namespace HyperLiquid.Net.SymbolOrderBooks
         private void HandleUpdate(DataEvent<HyperLiquidOrderBook> @event)
         {
             SetInitialOrderBook(@event.Data.Timestamp.Ticks, @event.Data.Levels.Bids, @event.Data.Levels.Asks);
+            if (_additionalUpdateHandler != null)
+                _additionalUpdateHandler(@event);
         }
 
         /// <inheritdoc />

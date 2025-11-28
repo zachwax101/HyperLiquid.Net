@@ -46,7 +46,7 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
-
+        
         #region Get Account Ledger
 
         /// <inheritdoc />
@@ -127,6 +127,41 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
+        
+        #region Send Asset
+        
+        /// <inheritdoc />
+
+        public async Task<WebCallResult> SendAssetAsync(
+            string destinationAddress, 
+            decimal quantity, 
+            string? sourceDex,
+            string? destinationDex,
+            string? token,
+            string? fromSubAccount,
+            CancellationToken ct = default)
+        {
+            var parameters = new ParameterCollection();
+            var actionParameters = new ParameterCollection()
+            {
+                { "type", "sendAsset" },
+                { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
+                { "destination", destinationAddress },
+                {"sourceDex", sourceDex},
+                {"destinationDex", destinationDex},
+                {"token", token},
+                {"fromSubAccount", fromSubAccount}
+            };
+            actionParameters.AddString("amount", quantity);
+            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            parameters.Add("action", actionParameters);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
+        }
+        #endregion
 
         #region Spot Transfer
 
@@ -160,7 +195,36 @@ namespace HyperLiquid.Net.Clients.SpotApi
         }
 
         #endregion
+        
+        #region SubAccount Transfer
 
+        /// <inheritdoc />
+        public async Task<WebCallResult> TransferBetweenSubAccountsAsync(string subAccountUser, bool isDeposit,
+            long usd
+            , CancellationToken ct = default
+        )
+        {
+            var parameters = new ParameterCollection();
+            var actionParameters = new ParameterCollection()
+            {
+                { "type", "subAccountTransfer" },
+                { "hyperliquidChain", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? "Testnet" : "Mainnet" },
+                { "signatureChainId", _baseClient.ClientOptions.Environment.Name == TradeEnvironmentNames.Testnet ? _chainIdTestnet : _chainIdMainnet },
+                { "subAccountUser", subAccountUser },
+                { "isDeposit", isDeposit}
+            };
+            actionParameters.AddString("usd", usd);
+            actionParameters.AddMilliseconds("time", DateTime.UtcNow);
+            parameters.Add("action", actionParameters);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, "exchange", HyperLiquidExchange.RateLimiter.HyperLiquidRest, 1, true);
+            var result = await _baseClient.SendAuthAsync<HyperLiquidDefault>(request, parameters, ct).ConfigureAwait(false);
+            return result.AsDataless();
+        }
+
+        
+        #endregion
+        
         #region Withdraw
 
         /// <inheritdoc />

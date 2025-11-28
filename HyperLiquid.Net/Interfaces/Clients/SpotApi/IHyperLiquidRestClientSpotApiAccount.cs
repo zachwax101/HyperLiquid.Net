@@ -72,6 +72,38 @@ namespace HyperLiquid.Net.Interfaces.Clients.SpotApi
             string asset,
             decimal quantity,
             CancellationToken ct = default);
+        
+        /// <summary>
+        /// This generalized method is used to transfer tokens between different perp DEXs, spot balance, users, and/or sub-accounts. Use "" to specify the default USDC perp DEX and "spot" to specify spot. Only the collateral token can be transferred to or from a perp DEX.
+        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#send-asset" /></para>
+        /// </summary>
+        /// <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
+        /// <param name="asset">Asset name, for example "HYPE"</param>
+        /// <param name="quantity">Quantity to send</param>
+        /// <param name="sourceDex">name of perp dex to transfer from. For the default perp dex use the empty string "" as name. Token must match the collateral token if transferring to or from a perp dex.</param>
+        /// <param name="destinationDex">name of the perp dex to transfer to</param>
+        /// <param name="token">tokenName:tokenId; e.g. "PURR:0xc4bf3f870c0e9465323c0b6ed28096c2" For spot use "spot"</param>
+        /// <param name="fromSubAccount">address in 42-character hexadecimal format or empty string if not from a subaccount</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebCallResult> SendAssetAsync(
+            string destinationAddress,
+            decimal quantity,
+            string? sourceDex = null,
+            string? destinationDex = null,
+            string? token = null,
+            string? fromSubAccount = null,
+            CancellationToken ct = default);
+
+
+        /// <summary>
+        /// Transfer between subaccount and master account.
+        /// <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#send-asset" /></para>
+        /// </summary>
+        /// <param name="subAccountUser">Subaccount address/param>
+        /// <param name="isDeposit">If true, transfer will send to subaccount, otherwise from subaccount</param>
+        /// <param name="usd">Quantity to send, 1_000_000 = 1 USD</param>
+        Task<WebCallResult> TransferBetweenSubAccountsAsync(string subAccountUser, bool isDeposit, long usd, CancellationToken ct = default);
+        
 
         /// <summary>
         /// Initiate the withdrawal flow. After making this request, the L1 validators will sign and send the withdrawal request to the bridge contract. There is a $1 fee for withdrawing at the time of this writing and withdrawals take approximately 5 minutes to finalize.

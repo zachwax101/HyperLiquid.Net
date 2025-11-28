@@ -356,7 +356,13 @@
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.TransferUsdAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.SendAssetAsync(System.String,System.Decimal,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.TransferSpotAsync(System.String,System.String,System.Decimal,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.TransferBetweenSubAccountsAsync(System.String,System.Boolean,System.Int64,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:HyperLiquid.Net.Clients.SpotApi.HyperLiquidRestClientSpotApiAccount.WithdrawAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
@@ -2784,6 +2790,21 @@
             <param name="quantity">Quantity to send</param>
             <param name="ct">Cancellation token</param>
         </member>
+        <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.SendAssetAsync(System.String,System.Decimal,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            This generalized method is used to transfer tokens between different perp DEXs, spot balance, users, and/or sub-accounts. Use "" to specify the default USDC perp DEX and "spot" to specify spot. Only the collateral token can be transferred to or from a perp DEX.
+            <para><a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/exchange-endpoint#send-asset" /></para>
+            </summary>
+            <param name="destinationAddress">Address in 42-character hexadecimal format; e.g. 0x0000000000000000000000000000000000000000</param>
+            <param name="asset">Asset name, for example "HYPE"</param>
+            <param name="quantity">Quantity to send</param>
+            <param name="sourceDex">name of perp dex to transfer from. For the default perp dex use the empty string "" as name. Token must match the collateral token if transferring to or from a perp dex.</param>
+            <param name="destinationDex">name of the perp dex to transfer to</param>
+            <param name="token">tokenName:tokenId; e.g. "PURR:0xc4bf3f870c0e9465323c0b6ed28096c2" For spot use "spot"</param>
+            <param name="fromSubAccount">address in 42-character hexadecimal format or empty string if not from a subaccount</param>
+            <param name="ct">Cancellation token</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.TransferBetweenSubAccountsAsync(System.String,System.Boolean,System.Int64,System.Threading.CancellationToken)" -->
         <member name="M:HyperLiquid.Net.Interfaces.Clients.SpotApi.IHyperLiquidRestClientSpotApiAccount.WithdrawAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
             <summary>
             Initiate the withdrawal flow. After making this request, the L1 validators will sign and send the withdrawal request to the bridge contract. There is a $1 fee for withdrawing at the time of this writing and withdrawals take approximately 5 minutes to finalize.
@@ -4917,6 +4938,11 @@
         <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidOrderBookOptions.Mantissa">
             <summary>
             Optional mantissa parameter in the order book subscription (see api docs)
+            </summary>
+        </member>
+        <member name="P:HyperLiquid.Net.Objects.Options.HyperLiquidOrderBookOptions.AdditionalUpdateHandler">
+            <summary>
+            Optional additional handler for order book updates. This can be used to handle updates in a custom way, e.g. to log them or to perform additional processing.
             </summary>
         </member>
         <member name="T:HyperLiquid.Net.Objects.Options.HyperLiquidRestOptions">
